@@ -1,0 +1,86 @@
+# bsp, stack or float
+yabai -m config layout bsp
+
+yabai -m onfig window_placement second_child
+
+# padding set to 12px
+yabai -m config top_padding 12
+yabai -m config bottom_padding 12
+yabai -m config left_padding 12
+yabai -m config right_padding 12
+yabai -m config window_gap 12
+
+#yabai -m config external_bar all:32:0
+
+# center mouse on window with focus
+#yabai -m config mouse_follows_focus on
+
+# modifier for clicking and dragging with mouse
+yabai -m config mouse_modifier alt
+# set modifier + left-click drag to move window
+yabai -m config mouse_action1 move
+# set modifier + right-click drag to resize window
+yabai -m config mouse_action2 resize
+
+
+# when window is dropped in center of another window, swap them (on edges it will split it)
+yabai -m mouse_drop_action swap
+
+yabai -m rule --add app="^System Settings$" manage=off
+yabai -m rule --add app="^Calculator$" manage=off
+yabai -m rule --add app="^Shortcut Keeper$" manage=off
+yabai -m rule --add app="^Elmedia Video Player$" manage=off
+
+
+
+# Open Safari to specific URLs to ensure unique titles
+
+
+# Open URLs in separate Safari windows
+osascript -e 'tell application "Safari"' -e 'make new document with properties {URL:"https://www.google.com"}' -e 'end tell'
+osascript -e 'tell application "Safari"' -e 'make new document with properties {URL:"https://medium.com"}' -e 'end tell'
+
+
+# Give Safari time to launch and load the pages
+sleep 2
+# Function to wait for a window with a specific title
+waitForTitle() {
+    local title="$1"
+    local attempts=0
+    local max_attempts=10
+    local found=0
+
+    echo "Waiting for window with title containing '$title'..."
+
+    while [[ $attempts -lt $max_attempts ]]; do
+        local window_id=$(yabai -m query --windows | jq -r ".[] | select(.app == \"Safari\") | select(.title | contains(\"$title\")) | .id")
+        if [[ -n $window_id ]]; then
+            echo "Found window ID $window_id for title containing '$title'."
+            found=1
+            break
+        fi
+        sleep 1
+        ((attempts++))
+    done
+
+    if [[ $found -eq 0 ]]; then
+        echo "Failed to find window with title containing '$title' after $max_attempts attempts."
+    fi
+
+    echo $window_id
+}
+
+# Wait for the windows to have the correct titles and get their IDs
+google_window_id=$(waitForTitle "Google")
+medium_window_id=$(waitForTitle "Medium")
+
+# If IDs were found, move the windows to the desired spaces
+if [[ -n $google_window_id ]]; then
+    yabai -m window $google_window_id --space 3
+    echo "Moved Google window to space 3."
+fi
+
+if [[ -n $medium_window_id ]]; then
+    yabai -m window $medium_window_id --space 7
+    echo "Moved Medium window to space 7."
+fi
