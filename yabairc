@@ -29,58 +29,31 @@ yabai -m mouse_drop_action swap
 yabai -m rule --add app="^System Settings$" manage=off
 yabai -m rule --add app="^Calculator$" manage=off
 yabai -m rule --add app="^Shortcut Keeper$" manage=off
-yabai -m rule --add app="^Elmedia Video Player$" manage=off
+# yabai -m rule --add app="^Elmedia Video Player$" manage=off
+yabai -m rule --add app="^zoom.us$" manage=off
+# yabai -m rule --add app="^Slack$" manage=off
+
+
+yabai -m rule --add app="IntelliJ IDEA" title="^P" manage=off
+yabai -m rule --add app="IntelliJ IDEA" title="^S" manage=off
+yabai -m rule --add app="IntelliJ IDEA" title="^C" manage=off
+yabai -m rule --add app="IntelliJ IDEA" title="^R" manage=off
+yabai -m rule --add app="IntelliJ IDEA" title="^E" manage=off
+yabai -m rule --add app="IntelliJ IDEA" title="^D" manage=off
+yabai -m rule --add app="IntelliJ IDEA" title="^G" manage=off
+yabai -m rule --add app="IntelliJ IDEA" title="^L" manage=off
+yabai -m rule --add app="IntelliJ IDEA" title="^M" manage=off
+yabai -m rule --add app="IntelliJ IDEA" title="^A" manage=off
+yabai -m rule --add app="IntelliJ IDEA" title="^U" manage=off
+yabai -m rule --add app="IntelliJ IDEA" title="^R" manage=off
 
 
 
-# Open Safari to specific URLs to ensure unique titles
+yabai -m rule --add app="^Insta360 Link Controller$" manage=off
 
+yabai -m rule --add app="^Cisco Secure Client$" manage=off
 
-# Open URLs in separate Safari windows
-osascript -e 'tell application "Safari"' -e 'make new document with properties {URL:"https://www.google.com"}' -e 'end tell'
-osascript -e 'tell application "Safari"' -e 'make new document with properties {URL:"https://medium.com"}' -e 'end tell'
+yabai -m rule --add app="^VLC media player$" manage=off
 
-
-# Give Safari time to launch and load the pages
-sleep 2
-# Function to wait for a window with a specific title
-waitForTitle() {
-    local title="$1"
-    local attempts=0
-    local max_attempts=10
-    local found=0
-
-    echo "Waiting for window with title containing '$title'..."
-
-    while [[ $attempts -lt $max_attempts ]]; do
-        local window_id=$(yabai -m query --windows | jq -r ".[] | select(.app == \"Safari\") | select(.title | contains(\"$title\")) | .id")
-        if [[ -n $window_id ]]; then
-            echo "Found window ID $window_id for title containing '$title'."
-            found=1
-            break
-        fi
-        sleep 1
-        ((attempts++))
-    done
-
-    if [[ $found -eq 0 ]]; then
-        echo "Failed to find window with title containing '$title' after $max_attempts attempts."
-    fi
-
-    echo $window_id
-}
-
-# Wait for the windows to have the correct titles and get their IDs
-google_window_id=$(waitForTitle "Google")
-medium_window_id=$(waitForTitle "Medium")
-
-# If IDs were found, move the windows to the desired spaces
-if [[ -n $google_window_id ]]; then
-    yabai -m window $google_window_id --space 3
-    echo "Moved Google window to space 3."
-fi
-
-if [[ -n $medium_window_id ]]; then
-    yabai -m window $medium_window_id --space 7
-    echo "Moved Medium window to space 7."
-fi
+# Match all IntelliJ IDEA windows except the main window
+# yabai -m rule --add app="^IntelliJ IDEA$" title!="^IntelliJ IDEA$" manage=off
